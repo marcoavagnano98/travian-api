@@ -6,7 +6,7 @@ from parser import *
 class Account:
     def __init__(self, url, credentials):
         self.session = Cs()
-        self.parser = Parser(session=self.session)
+        self.parser = ParserController(session=self.session, base_url=url)
         self.credentials = credentials
         self.base_url = url
         self.ids = {}  # id: village_name
@@ -46,22 +46,22 @@ class Account:
 
     def get_coordinates(self):
         if self.login.logged_in:
-            return self.parser.parse(f'{self.base_url}dorf1.php', Pt.COORDINATES)
+            return self.parser.parse('dorf1.php', Pt.COORDINATES)
 
     def get_silver_gold_amount(self):
         if self.login.logged_in:
-            self.coins = self.parser.parse(f'{self.base_url}dorf1.php', Pt.SILVER_GOLD)
+            self.coins = self.parser.parse('dorf1.php', Pt.SILVER_GOLD)
             return self.coins
 
     def set_village_ids(self):
         if self.login.logged_in:
-            self.ids = self.parser.parse(f'{self.base_url}dorf1.php', Pt.IDS)
+            self.ids = self.parser.parse('dorf1.php', Pt.IDS)
 
     def get_population(self):
         if self.login.logged_in:
             population = {}
             for key in self.ids.keys():
-                amount = self.parser.parse(f'{self.base_url}dorf1.php?newdid={key}&', Pt.POPULATION)
+                amount = self.parser.parse('dorf1.php?newdid={key}&', Pt.POPULATION)
                 population[self.ids[key]] = amount
             return population
 
@@ -69,7 +69,7 @@ class Account:
         warehouse_amounts = {}
         if self.login.logged_in:
             for key in self.ids.keys():
-                amount = self.parser.parse(f'{self.base_url}dorf1.php?newdid={key}&', Pt.WAREHOUSE)
+                amount = self.parser.parse('dorf1.php?newdid={key}&', Pt.WAREHOUSE)
                 warehouse_amounts[self.ids[key]] = amount
             return warehouse_amounts
 
@@ -77,20 +77,45 @@ class Account:
         granary_amount = {}
         if self.login.logged_in:
             for key in self.ids.keys():
-                amount = self.parser.parse(f'{self.base_url}dorf1.php?newdid={key}&', Pt.GRANARY)
+                amount = self.parser.parse('dorf1.php?newdid={key}&', Pt.GRANARY)
                 granary_amount[self.ids[key]] = amount
             return granary_amount
+
     def get_production(self):
         if self.login.logged_in:
             production = {}
             for key in self.ids.keys():
-                _production = self.parser.parse(f'{self.base_url}dorf1.php?newdid={key}&', Pt.PRODUCTION)
+                _production = self.parser.parse('dorf1.php?newdid={key}&', Pt.PRODUCTION)
                 production[self.ids[key]] = _production
             return production
+
     def get_troops(self):
         if self.login.logged_in:
             troops = {}
             for key in self.ids.keys():
-                _troops = self.parser.parse(f'{self.base_url}dorf1.php?newdid={key}&', Pt.TROOPS)
+                _troops = self.parser.parse(f'dorf1.php?newdid={key}&', Pt.TROOPS)
                 troops[self.ids[key]] = _troops
             return troops
+
+    def get_buildings_queue(self):
+        if self.login.logged_in:
+            buildings = {}
+            for key in self.ids.keys():
+                _buildings = self.parser.parse(f'dorf1.php?newdid={key}&', Pt.BUILDING_LIST)
+                buildings[self.ids[key]] = _buildings
+            return buildings
+
+    def get_all_buildings(self, villages = "all", filter="all"):
+        if self.login.logged_in:
+            buildings = {}
+            for key in self.ids.keys():
+                _buildings = self.parser.parse(f'dorf2.php?newdid={key}&', Pt.BUILDINGS)
+                buildings[self.ids[key]] = _buildings
+            return buildings
+    def get_movements(self):
+        if self.login.logged_in:
+            movements ={}
+            for key in self.ids.keys():
+                _movements = self.parser.parse(f'dorf1.php?newdid={key}&', Pt.MOVEMENTS)
+                movements[self.ids[key]] = _movements
+            return movements

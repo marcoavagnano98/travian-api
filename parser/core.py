@@ -1,31 +1,21 @@
-import bs4
-import time
-from . import *
-from . import models
-import re
+from .models import Dorf1, Dorf2
+from .parser_type import ParseType as Pt
 
 
-class Parser:
+class ParserController:
+    def __init__(self, session, base_url):
+        self.d1 = Dorf1(session=session, base_url=base_url)
+        self.d2 = Dorf2(session=session, base_url=base_url)
 
-    def __init__(self, session):
-        self.current_url = None
-        self.session = session
-        self.html_parser = None
-        self.last_reload = 0
-        self.treshold_reload = 2  # reload each 2 secs
-        self.d1 = models.Dorf1()
-
-    def set(self, url):
-        time_elapsed = time.time() - self.last_reload
-        if time_elapsed > self.treshold_reload or url != self.current_url:
-            self.current_url = url
-            html_page = self.session.get_request(url=url).text
-            self.html_parser = bs4.BeautifulSoup(html_page, 'html5lib')
-            self.last_reload = time.time()
-
-    def parse(self, url, _type):
-        self.set(url)
-        if "dorf1" in url:
-            return self.d1.parse(self.html_parser, _type)
-        if "dorf2" in url:
-            return None
+    def parse(self, params, _type):
+        if "dorf1" in params:
+            # before doing whatever thing in models it must set the parser to get right html page
+            self.d1.set(params)
+            if _type is Pt.MOVEMENTS:
+                link = self.d1.get_movements_link()
+                if link:
+                    self.d1.set(link)
+            return self.d1.parse(_type)
+        if "dorf2" in params:
+            self.d2.set(params)
+            return self.d2.parse(_type)

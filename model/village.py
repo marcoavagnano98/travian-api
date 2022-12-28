@@ -1,5 +1,5 @@
 class Village:
-    def __init__(self, name, x, y, population, warehouse, granary, production,troops):
+    def __init__(self, name, x, y, population, warehouse, granary, production, troops):
         self.x = x
         self.y = y
         self.name = name
@@ -10,3 +10,11 @@ class Village:
         self.production = production
         self.fields = {}
 
+
+class Building:
+    def __init__(self, name, level, gid, id):
+        self.name = name
+        self.level = level
+        # params to send post request
+        self.gid = gid
+        self.id = id
